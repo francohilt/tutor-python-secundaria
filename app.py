@@ -23,15 +23,18 @@ client = genai.Client(api_key=api_key)
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
     st.title("Panel de Control")
-    st.write("Tu asistente personal de programación para el aula.")
+    st.write("Tu asistente personal de programación.")
     
+    # --- AQUÍ PUEDES AGREGAR TU FIRMA ---
+    st.markdown("---")
+    st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
+    # -----------------------------------
+    
+    st.markdown("---")
     if st.button("🗑️ Reiniciar conversación", type="primary"):
         st.session_state.messages = []
         st.rerun()
         
-    st.markdown("---")
-    st.info("💡 **Consejo:** Pregúntale tus dudas sobre errores en tu código o conceptos que no entiendas.")
-
 # Título principal de la app
 st.title("🤖 Tu Tutor Personal de Python")
 st.write("¡Hola! Estoy aquí para ayudarte a aprender a programar desde cero paso a paso.")
@@ -86,3 +89,9 @@ if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?")
                 
             except Exception as e:
                 st.error(f"Ocurrió un error al conectar con la IA: {e}")
+
+st.markdown("---")
+st.markdown(
+    "<div style='text-align: center; color: gray;'>Creado con ❤️ por el Prof. Franco Hilt para clases de programación</div>", 
+    unsafe_allow_html=True
+)
