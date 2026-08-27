@@ -65,8 +65,7 @@ with st.sidebar:
         st.rerun()
 
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Estoy aquí para ayudarte a aprender a programar desde cero paso a paso, guiándote para que encuentres la solución por ti mismo.")
-
+st.write("¡Hola! Casi tan inteligente como Franquito. Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
 system_prompt = f"""
 Eres FranPy, un profesor de programación en Python paciente, motivador y amigable, enfocado en estudiantes de secundaria.
 
@@ -123,6 +122,6 @@ else:
 
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>☕ No te frustres, ¡con un poco de lógica ya te va a salir!</div>", 
+    "<div style='text-align: center; color: gray;'>💖​​ Un error de sintaxis no te define como persona (todavía)</div>", 
     unsafe_allow_html=True
 )
