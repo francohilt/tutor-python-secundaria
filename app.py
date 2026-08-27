@@ -37,11 +37,26 @@ if "messages" not in st.session_state:
 
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
-    st.title("Panel de Control")
-    st.write("Tu asistente personal de programación.")
+    st.title("FranPy🐍")
     
     st.markdown("---")
     st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.subheader("💡 Preguntas Frecuentes")
+    
+    # Botones rápidos de ejemplo
+    if st.button("¿Cómo creo una variable?"):
+        st.session_state.messages.append({"role": "user", "content": "¿Cómo creo una variable en Python?"})
+        st.rerun()
+        
+    if st.button("¿Para qué sirve un if?"):
+        st.session_state.messages.append({"role": "user", "content": "¿Para qué sirve un if y cómo se usa?"})
+        st.rerun()
+        
+    if st.button("Tengo un error en mi código"):
+        st.session_state.messages.append({"role": "user", "content": "Tengo un error en mi código, ¿me ayudas a encontrarlo?"})
+        st.rerun()
     
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
     st.markdown("---")
@@ -125,6 +140,6 @@ else:
 
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>Creado con ❤️ por el Prof. Franco Hilt para clases de programación</div>", 
+    "<div style='text-align: center; color: gray;'>☕ No te frustres, ¡con un poco de lógica ya te va a salir! — Prof. Franco Hilt</div>", 
     unsafe_allow_html=True
 )
