@@ -25,12 +25,15 @@ def cargar_contenido_pdf(ruta_pdf):
             texto_extraido = pagina.extract_text()
             if texto_extraido:
                 texto_acumulado += texto_extraido + "\n"
-    except Exception as e:
+    except Exception:
         pass
     return texto_acumulado
 
 nombre_pdf = "capitulos.pdf" 
 contenido_material = cargar_contenido_pdf(nombre_pdf)
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
@@ -40,14 +43,17 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
     
+    num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
+    st.markdown("---")
+    st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 35")
+    
     st.markdown("---")
     st.subheader("📚 Material de Estudio")
-    
     if os.path.exists(nombre_pdf):
         with open(nombre_pdf, "rb") as pdf_file:
             pdf_bytes = pdf_file.read()
         st.download_button(
-            label="📄 Descargar Capítulos (PDF)",
+            label="📄 Descargar apunte (PDF)",
             data=pdf_bytes,
             file_name="Capitulos_Python_Franco_Hilt.pdf",
             mime="application/pdf"
@@ -79,39 +85,43 @@ Reglas estrictas que debes seguir:
 5. Explica los errores usando analogías sencillas y cotidianas y celebra los pequeños avances del estudiante.
 """
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?"):
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.chat_message("user"):
-        st.markdown(user_input)
+LIMITE_MENSAJES = 35
 
-    with st.chat_message("assistant"):
-        with st.spinner("Pensando una pista para ti..."):
-            try:
-                chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages]
-                
-                response = client.models.generate_content(
-                    model='gemini-3.6-flash',
-                    contents=chat_history,
-                    config={
-                        'system_instruction': system_prompt,
-                        'temperature': 0.7,
-                    }
-                )
-                
-                bot_response = response.text
-                st.markdown(bot_response)
-                
-                st.session_state.messages.append({"role": "model", "content": bot_response})
-                
-            except Exception as e:
-                st.error(f"Ocurrió un error al conectar con la IA: {e}")
+if num_mensajes >= LIMITE_MENSAJES:
+    st.warning("⚠️ Has alcanzado el límite de mensajes recomendados para esta sesión. Por favor, usa el botón **'Reiniciar conversación'** en el panel lateral para continuar practicando.")
+else:
+    user_input = st.chat_input("¿Qué duda tienes sobre tu código de Python?")
+    
+    if user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.markdown(user_input)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Pensando una pista para ti..."):
+                try:
+                    chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages]
+                    
+                    response = client.models.generate_content(
+                        model='gemini-3.6-flash',
+                        contents=chat_history,
+                        config={
+                            'system_instruction': system_prompt,
+                            'temperature': 0.7,
+                        }
+                    )
+                    
+                    bot_response = response.text
+                    st.markdown(bot_response)
+                    st.session_state.messages.append({"role": "model", "content": bot_response})
+                    
+                except Exception as e:
+                    st.error(f"Ocurrió un error al conectar con la IA: {e}")
+        st.rerun()
 
 st.markdown("---")
 st.markdown(
