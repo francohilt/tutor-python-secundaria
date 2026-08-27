@@ -3,14 +3,6 @@ import streamlit as st
 from google import genai
 from pypdf import PdfReader
 
-st.markdown("""
-    <style>
-        * {
-            overflow-anchor: none !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 st.set_page_config(page_title="FranPy - Tutor de Python", page_icon="🐍")
 
 try:
