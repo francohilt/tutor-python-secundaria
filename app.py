@@ -88,7 +88,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-LIMITE_MENSAJES = 35
+LIMITE_MENSAJES = 80
 
 if num_mensajes >= LIMITE_MENSAJES:
     st.warning("⚠️ Has alcanzado el límite de mensajes recomendados para esta sesión. Por favor, usa el botón **'Reiniciar conversación'** en el panel lateral para continuar practicando.")
