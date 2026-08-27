@@ -43,20 +43,6 @@ with st.sidebar:
     st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
 
     st.markdown("---")
-    st.subheader("💡 Preguntas Frecuentes")
-    
-    # Botones rápidos de ejemplo
-    if st.button("¿Cómo creo una variable?"):
-        st.session_state.messages.append({"role": "user", "content": "¿Cómo creo una variable en Python?"})
-        st.rerun()
-        
-    if st.button("¿Para qué sirve un if?"):
-        st.session_state.messages.append({"role": "user", "content": "¿Para qué sirve un if y cómo se usa?"})
-        st.rerun()
-        
-    if st.button("Tengo un error en mi código"):
-        st.session_state.messages.append({"role": "user", "content": "Tengo un error en mi código, ¿me ayudas a encontrarlo?"})
-        st.rerun()
     
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
     st.markdown("---")
