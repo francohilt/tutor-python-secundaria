@@ -40,12 +40,9 @@ with st.sidebar:
     st.title("FranPy🐍")
     
     st.markdown("---")
-    st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
-
-    st.markdown("---")
     
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
-    st.markdown("---")
+
     st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 35")
     
     st.markdown("---")
