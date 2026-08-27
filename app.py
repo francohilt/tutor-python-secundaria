@@ -2,11 +2,10 @@ import os
 import streamlit as st
 from google import genai
 
-# 1. Configuración de la página
-st.set_page_config(page_title="Tutor de Python para Estudiantes", page_icon="🐍")
+st.set_page_config(page_title="FranPy - Tutor de Python", page_icon="🐍")
 
-# 2. Configuración segura de la API Key
-# Intenta leer la clave desde los Secrets de Streamlit Cloud; si no está, busca la variable de entorno local.
+st.title("🐍 FranPy: Tu Tutor Personal")
+st.write("¡Hola! Estoy aquí para ayudarte a aprender a programar desde cero paso a paso, guiándote para que encuentres la solución por ti mismo.")
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
 except Exception:
@@ -16,30 +15,19 @@ if not api_key:
     st.error("⚠️ No se encontró la API Key de Gemini. Configúrala en los Secrets de Streamlit o como variable de entorno.")
     st.stop()
 
-# Inicializar el cliente de la API de Google GenAI
 client = genai.Client(api_key=api_key)
 
-# 3. Barra lateral con opciones adicionales
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
     st.title("Panel de Control")
     st.write("Tu asistente personal de programación.")
-    
-    # --- AQUÍ PUEDES AGREGAR TU FIRMA ---
     st.markdown("---")
-    st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
-    # -----------------------------------
-    
+    st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)    
     st.markdown("---")
     if st.button("🗑️ Reiniciar conversación", type="primary"):
         st.session_state.messages = []
         st.rerun()
         
-# Título principal de la app
-st.title("🤖 Tu Tutor Personal de Python")
-st.write("¡Hola! Estoy aquí para ayudarte a aprender a programar desde cero paso a paso.")
-
-# 4. Definir la "Personalidad" (System Prompt) optimizada para secundaria
 system_prompt = """
 Eres un profesor de programación en Python paciente, motivador y amigable, enfocado en estudiantes de escuela secundaria.
 Reglas estrictas que debes seguir:
@@ -50,27 +38,21 @@ Reglas estrictas que debes seguir:
 5. Celebra los pequeños avances del estudiante para mantener su motivación alta.
 """
 
-# 5. Mantener el historial del chat en la sesión de Streamlit
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Mostrar mensajes anteriores en la interfaz
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 6. Entrada del usuario (lo que escribe el alumno)
 if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?"):
-    # Agregar mensaje del usuario al historial
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Generar la respuesta de la IA aplicando las instrucciones del sistema
     with st.chat_message("assistant"):
         with st.spinner("Pensando una pista para ti..."):
             try:
-                # Construimos el historial de la conversación para enviarlo a Gemini
                 chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages]
                 response = client.models.generate_content(
                     model='gemini-3.6-flash', 
@@ -84,7 +66,6 @@ if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?")
                 bot_response = response.text
                 st.markdown(bot_response)
                 
-                # Guardar la respuesta en el historial
                 st.session_state.messages.append({"role": "model", "content": bot_response})
                 
             except Exception as e:
