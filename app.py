@@ -69,9 +69,8 @@ if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?")
             try:
                 # Construimos el historial de la conversación para enviarlo a Gemini
                 chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages]
-                
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.6-flash', 
                     contents=chat_history,
                     config={
                         'system_instruction': system_prompt,
