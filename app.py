@@ -115,6 +115,7 @@ else:
                     )
                     
                     bot_response = response.text
+                    
                     st.markdown(bot_response)
                     st.session_state.messages.append({"role": "model", "content": bot_response})
                     
