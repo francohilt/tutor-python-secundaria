@@ -43,7 +43,7 @@ with st.sidebar:
     
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
 
-    st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 35")
+    st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 80")
     
     st.markdown("---")
     st.subheader("📚 Material de Estudio")
