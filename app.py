@@ -65,7 +65,7 @@ with st.sidebar:
         st.rerun()
 
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Casi tan inteligente como Franquito. Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
+st.write("¡Hola! Soy casi tan inteligente como Franquito. <br>Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
 system_prompt = f"""
 Eres FranPy, un profesor de programación en Python paciente, motivador y amigable, enfocado en estudiantes de secundaria.
 
