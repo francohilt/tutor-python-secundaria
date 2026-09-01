@@ -36,7 +36,7 @@ with st.sidebar:
         st.rerun()
 
 # Título principal de la app
-st.title("🐍 FranPy: Tu tutor de programación")
+st.title("🐍 FranPy - Tutor de Python")
 st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
 
 # 4. Definir el System Prompt sin dependencias de archivos
