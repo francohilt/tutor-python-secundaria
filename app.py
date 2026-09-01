@@ -46,7 +46,7 @@ with st.sidebar:
     st.write("Tu asistente personal de programación.")
     
     st.markdown("---")
-    st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
+    st.markdown("Desarrollado por **Franco Hilt**", unsafe_allow_html=True) 
     
     # Contador de mensajes de la sesión actual (Límite preventivo de 80)
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
