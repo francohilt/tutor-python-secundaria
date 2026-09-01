@@ -69,7 +69,7 @@ with st.sidebar:
 
 # Título principal de la app
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
+st.write("¡Hola! Casi tan inteligente como el profe Franco Hilt. Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
 
 # 5. Definir el System Prompt integrando tu material
 system_prompt = f"""
@@ -110,12 +110,13 @@ else:
         with st.chat_message("assistant"):
             with st.spinner("Pensando una pista para ti..."):
                 try:
-                    chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages]
+                    # Excluimos el último mensaje para pasarlo correctamente en contents/history
+                    chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages[:-1]]
                     
-                    # Usamos gemini-2.5-flash para mayor estabilidad y evitar errores 404
+                    # Usamos gemini-1.5-flash para estabilidad total
                     response = client.models.generate_content(
-                        model='gemini-2.5-flash',
-                        contents=chat_history,
+                        model='gemini-1.5-flash',
+                        contents=chat_history if chat_history else user_input,
                         config={
                             'system_instruction': system_prompt,
                             'temperature': 0.7,
@@ -127,18 +128,17 @@ else:
                     st.session_state.messages.append({"role": "model", "content": bot_response})
                     
                 except Exception as e:
-                    # Control amigable por si salta el error 429 de límite de velocidad o saturación
                     error_str = str(e)
                     if "429" in error_str or "ResourceExhausted" in error_str:
                         st.warning("⏳ FranPy está recibiendo muchas consultas al mismo tiempo y se quedó sin aliento por un segundo. Espera 10 segundos y vuelve a enviar tu mensaje.")
                     else:
-                        st.error(f"Ocurrió un error temporal de conexión con la IA. Inténtalo de nuevo en un momento.")
+                        st.error(f"Ocurrió un error técnico: {error_str}")
         
         st.rerun()
 
 # Pie de página con humor
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) - F.H</div>", 
+    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) — Prof. Franco Hilt</div>", 
     unsafe_allow_html=True
 )
