@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 from google import genai
-from pypdf import PdfReader
 
 # 1. Configuración de la página
 st.set_page_config(page_title="FranPy - Tutor de Python", page_icon="🐍")
@@ -18,24 +17,7 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-# 3. Extraer texto del PDF
-@st.cache_data
-def cargar_contenido_pdf(ruta_pdf):
-    texto_acumulado = ""
-    try:
-        lector = PdfReader(ruta_pdf)
-        for pagina in lector.pages:
-            texto_extraido = pagina.extract_text()
-            if texto_extraido:
-                texto_acumulado += texto_extraido + "\n"
-    except Exception:
-        pass
-    return texto_acumulado
-
-nombre_pdf = "resumen_c1_c2.pdf" 
-contenido_material = cargar_contenido_pdf(nombre_pdf)
-
-# 4. Mantener el historial del chat en la sesión
+# 3. Mantener el historial del chat en la sesión
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -49,45 +31,23 @@ with st.sidebar:
     st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 80")
 
     st.markdown("---")
-    st.subheader("📚 Material de Estudio")
-    resumen_pdf = "capitulos.pdf" 
-
-    if os.path.exists(resumen_pdf):
-        with open(resumen_pdf, "rb") as pdf_file:
-            pdf_bytes = pdf_file.read()
-        st.download_button(
-            label="📄 Descargar Capítulos (PDF)",
-            data=pdf_bytes,
-            file_name="Resumen_Python.pdf",
-            mime="application/pdf"
-        )
-    else:
-        st.info("Sube tu archivo PDF al repositorio para habilitar la descarga.")
-
-    st.markdown("---")
     if st.button("🗑️ Reiniciar conversación", type="primary"):
         st.session_state.messages = []
         st.rerun()
 
 # Título principal de la app
-st.title("🐍 FranPy: Tutor de Programación")
+st.title("🐍 FranPY")
 st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
 
-# 5. Definir el System Prompt integrando tu material
-system_prompt = f"""
-Eres FranPy, un profesor de programación en Python paciente, motivador y amigable, enfocados en estudiantes de secundaria.
-
-MATERIAL DE ESTUDIO OFICIAL DEL PROFESOR (Usa esto como tu referencia principal de explicaciones y ejemplos):
-{{
-{contenido_material}
-}}
+# 4. Definir el System Prompt sin dependencias de archivos
+system_prompt = """
+Eres FranPy, un profesor de programación en Python paciente, motivador y amigable, enfocado en estudiantes de secundaria.
 
 Reglas estrictas que debes seguir:
-1. Prioriza los conceptos, ejemplos y la estructura explicada en el material de estudio oficial del profesor provisto arriba.
-2. NUNCA des el código completamente resuelto de los ejercicios o tareas.
-3. Usa el método socrático: haz preguntas orientadoras y pistas paso a paso para que el alumno descubra la solución por sí mismo.
-4. Tienes libertad para ayudar con dudas generales de sintaxis de Python o errores de código que los alumnos presenten, manteniendo siempre el nivel secundario.
-5. Explica los errores usando analogías sencillas y cotidianas y celebra los pequeños avances del estudiante.
+1. NUNCA des el código completamente resuelto de los ejercicios o tareas.
+2. Usa el método socrático: haz preguntas orientadoras y pistas paso a paso para que el alumno descubra la solución por sí mismo.
+3. Ayuda con dudas generales de sintaxis de Python o errores de código que los alumnos presenten, manteniendo siempre un nivel secundario y claro.
+4. Explica los errores usando analogías sencillas y cotidianas y celebra los pequeños avances del estudiante.
 """
 
 # Mostrar historial de mensajes guardados
@@ -95,23 +55,20 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 6. Control de Límite de mensajes por sesión
+# 5. Control de Límite de mensajes por sesión
 LIMITE_MENSAJES = 80
 
 if num_mensajes >= LIMITE_MENSAJES:
     st.warning("⚠️ Has alcanzado el límite de mensajes recomendados para esta sesión. Por favor, usa el botón **'Reiniciar conversación'** en el panel lateral para continuar practicando.")
 else:
     if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?"):
-        # Añadir y mostrar mensaje del usuario al instante
         st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        # Generar respuesta de la IA de forma directa y estable
         with st.chat_message("assistant"):
             with st.spinner("Pensando una pista para ti..."):
                 try:
-                    # Formatear el historial correctamente para la API
                     chat_history = []
                     for m in st.session_state.messages:
                         rol_api = "model" if m["role"] == "assistant" else "user"
