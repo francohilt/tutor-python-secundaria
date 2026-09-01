@@ -78,7 +78,7 @@ else:
                         })
                     
                     response = client.models.generate_content(
-                        model='gemini-3.5-flash',
+                        model='gemini-3.6-flash',
                         contents=chat_history,
                         config={
                             'system_instruction': system_prompt,
