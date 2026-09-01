@@ -69,7 +69,7 @@ with st.sidebar:
 
 # Título principal de la app
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
+st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
 
 # 5. Definir el System Prompt integrando tu material
 system_prompt = f"""
@@ -139,6 +139,6 @@ else:
 # Pie de página con humor
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía)</div>", 
+    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) - F.H</div>", 
     unsafe_allow_html=True
 )
