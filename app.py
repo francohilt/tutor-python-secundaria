@@ -3,8 +3,10 @@ import streamlit as st
 from google import genai
 from pypdf import PdfReader
 
+# 1. Configuración de la página
 st.set_page_config(page_title="FranPy - Tutor de Python", page_icon="🐍")
 
+# 2. Configuración segura de la API Key
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
 except Exception:
@@ -16,6 +18,7 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
+# 3. Extraer texto del PDF
 @st.cache_data
 def cargar_contenido_pdf(ruta_pdf):
     texto_acumulado = ""
@@ -32,26 +35,47 @@ def cargar_contenido_pdf(ruta_pdf):
 nombre_pdf = "capitulos.pdf" 
 contenido_material = cargar_contenido_pdf(nombre_pdf)
 
+# 4. Mantener el historial del chat en la sesión
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# --- PANEL DE CONTROL (BARRA LATERAL) ---
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
-    st.title("FranPy🐍")
-    st.markdown("Desarrollado por **Franco Hilt**", unsafe_allow_html=True)    
-    st.markdown("---")
+    st.title("Panel de Control")
+    st.write("Tu asistente personal de programación.")
     
+    st.markdown("---")
+    st.markdown("**Desarrollado por:**<br>Prof. Franco Hilt", unsafe_allow_html=True)
+    
+    # Contador de mensajes de la sesión actual (Límite preventivo de 80)
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
-
+    st.markdown("---")
     st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 80")
     
+    st.markdown("---")
+    st.subheader("💡 Preguntas Frecuentes")
+    
+    # Botones rápidos de ejemplo
+    if st.button("¿Cómo creo una variable?"):
+        st.session_state.messages.append({"role": "user", "content": "¿Cómo creo una variable en Python?"})
+        st.rerun()
+        
+    if st.button("¿Para qué sirve un if?"):
+        st.session_state.messages.append({"role": "user", "content": "¿Para qué sirve un if y cómo se usa?"})
+        st.rerun()
+        
+    if st.button("Tengo un error en mi código"):
+        st.session_state.messages.append({"role": "user", "content": "Tengo un error en mi código, ¿me ayudas a encontrarlo?"})
+        st.rerun()
+
     st.markdown("---")
     st.subheader("📚 Material de Estudio")
     if os.path.exists(nombre_pdf):
         with open(nombre_pdf, "rb") as pdf_file:
             pdf_bytes = pdf_file.read()
         st.download_button(
-            label="📄 Descargar apunte (PDF)",
+            label="📄 Descargar Capítulos (PDF)",
             data=pdf_bytes,
             file_name="Capitulos_Python_Franco_Hilt.pdf",
             mime="application/pdf"
@@ -64,10 +88,11 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
+# Título principal de la app
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Soy casi tan inteligente como Franquito.")
-st.write("Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
+st.write("¡Hola! Casi tan inteligente como el profe Franco Hilt. Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
 
+# 5. Definir el System Prompt integrando tu material
 system_prompt = f"""
 Eres FranPy, un profesor de programación en Python paciente, motivador y amigable, enfocado en estudiantes de secundaria.
 
@@ -84,15 +109,18 @@ Reglas estrictas que debes seguir:
 5. Explica los errores usando analogías sencillas y cotidianas y celebra los pequeños avances del estudiante.
 """
 
+# Mostrar historial de mensajes
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# 6. Control de Límite de mensajes por sesión
 LIMITE_MENSAJES = 80
 
 if num_mensajes >= LIMITE_MENSAJES:
     st.warning("⚠️ Has alcanzado el límite de mensajes recomendados para esta sesión. Por favor, usa el botón **'Reiniciar conversación'** en el panel lateral para continuar practicando.")
 else:
+    # Entrada normal del usuario
     user_input = st.chat_input("¿Qué duda tienes sobre tu código de Python?")
     
     if user_input:
@@ -105,8 +133,9 @@ else:
                 try:
                     chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages]
                     
+                    # Usamos gemini-2.5-flash para mayor estabilidad y evitar errores 404
                     response = client.models.generate_content(
-                        model='gemini-3.6-flash',
+                        model='gemini-2.5-flash',
                         contents=chat_history,
                         config={
                             'system_instruction': system_prompt,
@@ -115,16 +144,22 @@ else:
                     )
                     
                     bot_response = response.text
-                    
                     st.markdown(bot_response)
                     st.session_state.messages.append({"role": "model", "content": bot_response})
                     
                 except Exception as e:
-                    st.error(f"Ocurrió un error al conectar con la IA: {e}")
+                    # Control amigable por si salta el error 429 de límite de velocidad o saturación
+                    error_str = str(e)
+                    if "429" in error_str or "ResourceExhausted" in error_str:
+                        st.warning("⏳ FranPy está recibiendo muchas consultas al mismo tiempo y se quedó sin aliento por un segundo. Espera 10 segundos y vuelve a enviar tu mensaje.")
+                    else:
+                        st.error(f"Ocurrió un error temporal de conexión con la IA. Inténtalo de nuevo en un momento.")
+        
         st.rerun()
 
+# Pie de página con humor
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>💖​​ Un error de sintaxis no te define como persona (todavía)</div>", 
+    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) — Prof. Franco Hilt</div>", 
     unsafe_allow_html=True
 )
