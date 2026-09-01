@@ -52,22 +52,6 @@ with st.sidebar:
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
     st.markdown("---")
     st.metric(label="Tus mensajes en esta sesión", value=f"{num_mensajes} / 80")
-    
-    st.markdown("---")
-    st.subheader("💡 Preguntas Frecuentes")
-    
-    # Botones rápidos de ejemplo
-    if st.button("¿Cómo creo una variable?"):
-        st.session_state.messages.append({"role": "user", "content": "¿Cómo creo una variable en Python?"})
-        st.rerun()
-        
-    if st.button("¿Para qué sirve un if?"):
-        st.session_state.messages.append({"role": "user", "content": "¿Para qué sirve un if y cómo se usa?"})
-        st.rerun()
-        
-    if st.button("Tengo un error en mi código"):
-        st.session_state.messages.append({"role": "user", "content": "Tengo un error en mi código, ¿me ayudas a encontrarlo?"})
-        st.rerun()
 
     st.markdown("---")
     st.subheader("📚 Material de Estudio")
@@ -90,7 +74,7 @@ with st.sidebar:
 
 # Título principal de la app
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Casi tan inteligente como el profe Franco Hilt. Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
+st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
 
 # 5. Definir el System Prompt integrando tu material
 system_prompt = f"""
@@ -160,6 +144,6 @@ else:
 # Pie de página con humor
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) — Prof. Franco Hilt</div>", 
+    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía)</div>", 
     unsafe_allow_html=True
 )
