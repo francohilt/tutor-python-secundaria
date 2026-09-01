@@ -118,7 +118,7 @@ else:
                     
                     # Crear sesión de chat con la SDK oficial de Google GenAI
                     chat = client.chats.create(
-                        model='gemini-1.5-flash',
+                        model='gemini-3.5-flash',
                         history=history_gemini,
                         config={
                             'system_instruction': system_prompt,
