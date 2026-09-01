@@ -50,7 +50,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.subheader("📚 Material de Estudio")
-    resumen_pdf = "resumen_c1_c2.pdf" 
+    resumen_pdf = "capitulos.pdf" 
 
     if os.path.exists(resumen_pdf):
         with open(resumen_pdf, "rb") as pdf_file:
