@@ -68,8 +68,8 @@ with st.sidebar:
         st.rerun()
 
 # Título principal de la app
-st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
+st.title("🐍 FranPy: Tutor de Programación")
+st.write("¡Hola!Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
 
 # 5. Definir el System Prompt integrando tu material
 system_prompt = f"""
@@ -88,7 +88,7 @@ Reglas estrictas que debes seguir:
 5. Explica los errores usando analogías sencillas y cotidianas y celebra los pequeños avances del estudiante.
 """
 
-# Mostrar historial de mensajes
+# Mostrar historial de mensajes guardados
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
@@ -99,33 +99,36 @@ LIMITE_MENSAJES = 80
 if num_mensajes >= LIMITE_MENSAJES:
     st.warning("⚠️ Has alcanzado el límite de mensajes recomendados para esta sesión. Por favor, usa el botón **'Reiniciar conversación'** en el panel lateral para continuar practicando.")
 else:
-    # Entrada normal del usuario
-    user_input = st.chat_input("¿Qué duda tienes sobre tu código de Python?")
-    
-    if user_input:
+    # Entrada de chat nativa de Streamlit (maneja su propio flujo de ejecución)
+    if user_input := st.chat_input("¿Qué duda tienes sobre tu código de Python?"):
+        # Guardar mensaje del usuario
         st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
             st.markdown(user_input)
 
+        # Generar respuesta de la IA
         with st.chat_message("assistant"):
             with st.spinner("Pensando una pista para ti..."):
                 try:
-                    # Traducimos los roles de Streamlit ('assistant' -> 'model') para que Gemini los acepte
-                    chat_history = []
+                    # Construir el historial para la API usando el formato correcto de roles
+                    history_gemini = []
                     for m in st.session_state.messages[:-1]:
-                        gemini_role = "model" if m["role"] == "assistant" else "user"
-                        chat_history.append({"role": gemini_role, "parts": [{"text": m["content"]}]})
+                        gem_role = "model" if m["role"] == "assistant" else "user"
+                        history_gemini.append({"role": gem_role, "parts": [{"text": m["content"]}]})
                     
-                    response = client.models.generate_content(
+                    # Crear sesión de chat con la SDK oficial de Google GenAI
+                    chat = client.chats.create(
                         model='gemini-1.5-flash',
-                        contents=chat_history if chat_history else user_input,
+                        history=history_gemini,
                         config={
                             'system_instruction': system_prompt,
                             'temperature': 0.7,
                         }
                     )
                     
+                    response = chat.send_message(user_input)
                     bot_response = response.text
+                    
                     st.markdown(bot_response)
                     st.session_state.messages.append({"role": "assistant", "content": bot_response})
                     
@@ -135,8 +138,6 @@ else:
                         st.warning("⏳ FranPy está recibiendo muchas consultas al mismo tiempo. Espera 10 segundos y vuelve a enviar tu mensaje.")
                     else:
                         st.error(f"Ocurrió un error técnico: {error_str}")
-        
-        st.rerun()
 
 # Pie de página con humor
 st.markdown("---")
