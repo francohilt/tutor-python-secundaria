@@ -42,8 +42,6 @@ if "messages" not in st.session_state:
 # --- PANEL DE CONTROL (BARRA LATERAL) ---
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
-    st.markdown("---")
-    st.markdown("Desarrollado por **Franco Hilt**", unsafe_allow_html=True) 
     
     # Contador de mensajes de la sesión actual (Límite preventivo de 80)
     num_mensajes = sum(1 for m in st.session_state.messages if m["role"] == "user")
