@@ -42,9 +42,6 @@ if "messages" not in st.session_state:
 # --- PANEL DE CONTROL (BARRA LATERAL) ---
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/python.png", width=80)
-    st.title("Panel de Control")
-    st.write("Tu asistente personal de programación.")
-    
     st.markdown("---")
     st.markdown("Desarrollado por **Franco Hilt**", unsafe_allow_html=True) 
     
