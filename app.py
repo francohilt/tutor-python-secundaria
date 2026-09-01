@@ -32,7 +32,7 @@ def cargar_contenido_pdf(ruta_pdf):
         pass
     return texto_acumulado
 
-nombre_pdf = "capitulos.pdf" 
+nombre_pdf = "resumen_c1_c2.pdf" 
 contenido_material = cargar_contenido_pdf(nombre_pdf)
 
 # 4. Mantener el historial del chat en la sesión
@@ -50,13 +50,15 @@ with st.sidebar:
 
     st.markdown("---")
     st.subheader("📚 Material de Estudio")
-    if os.path.exists(nombre_pdf):
-        with open(nombre_pdf, "rb") as pdf_file:
+    resumen_pdf = "resumen_c1_c2.pdf" 
+
+    if os.path.exists(resumen_pdf):
+        with open(resumen_pdf, "rb") as pdf_file:
             pdf_bytes = pdf_file.read()
         st.download_button(
             label="📄 Descargar Capítulos (PDF)",
             data=pdf_bytes,
-            file_name="Capitulos_Python_Franco_Hilt.pdf",
+            file_name="Resumen_Python.pdf",
             mime="application/pdf"
         )
     else:
