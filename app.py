@@ -69,7 +69,7 @@ with st.sidebar:
 
 # Título principal de la app
 st.title("🐍 FranPy: Tu Tutor Personal")
-st.write("¡Hola! Casi tan inteligente como el profe Franco Hilt. Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo (¡sin hacerte la tarea!).")
+st.write("¡Hola! Estoy aquí para guiarte paso a paso y ayudarte a encontrar la solución por ti mismo.")
 
 # 5. Definir el System Prompt integrando tu material
 system_prompt = f"""
@@ -110,10 +110,12 @@ else:
         with st.chat_message("assistant"):
             with st.spinner("Pensando una pista para ti..."):
                 try:
-                    # Excluimos el último mensaje para pasarlo correctamente en contents/history
-                    chat_history = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in st.session_state.messages[:-1]]
+                    # Traducimos los roles de Streamlit ('assistant' -> 'model') para que Gemini los acepte
+                    chat_history = []
+                    for m in st.session_state.messages[:-1]:
+                        gemini_role = "model" if m["role"] == "assistant" else "user"
+                        chat_history.append({"role": gemini_role, "parts": [{"text": m["content"]}]})
                     
-                    # Usamos gemini-1.5-flash para estabilidad total
                     response = client.models.generate_content(
                         model='gemini-1.5-flash',
                         contents=chat_history if chat_history else user_input,
@@ -125,12 +127,12 @@ else:
                     
                     bot_response = response.text
                     st.markdown(bot_response)
-                    st.session_state.messages.append({"role": "model", "content": bot_response})
+                    st.session_state.messages.append({"role": "assistant", "content": bot_response})
                     
                 except Exception as e:
                     error_str = str(e)
                     if "429" in error_str or "ResourceExhausted" in error_str:
-                        st.warning("⏳ FranPy está recibiendo muchas consultas al mismo tiempo y se quedó sin aliento por un segundo. Espera 10 segundos y vuelve a enviar tu mensaje.")
+                        st.warning("⏳ FranPy está recibiendo muchas consultas al mismo tiempo. Espera 10 segundos y vuelve a enviar tu mensaje.")
                     else:
                         st.error(f"Ocurrió un error técnico: {error_str}")
         
@@ -139,6 +141,6 @@ else:
 # Pie de página con humor
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) — Prof. Franco Hilt</div>", 
+    "<div style='text-align: center; color: gray;'>🐍 Un error de sintaxis no te define como persona (todavía) — F.H</div>", 
     unsafe_allow_html=True
 )
